@@ -177,104 +177,50 @@ exports.verifyOtp = async (req, res) => {
   }
 };
 
-// Resend OTP endpoint
 exports.resendOtp = [
   authLimiter,
   async (req, res) => {
+    // console.log("user:", JSON.stringify(req.body, null, 2));
     try {
-      const userId = req.body?.user;
-      const user = await User.findById(userId);
+      const user = await User.findById(req.body?.user);
 
       if (!user) {
         return res.status(404).json({
           success: false,
-          message: "\u26A0\uFE0F User not found",
+          message: "User not found",
         });
       }
 
-      // Delete any existing OTPs for the user
       await Otp.deleteMany({ user: user._id });
 
-      // Generate and save a new OTP
       const otp = generateOTP();
       const newOtp = new Otp({
         user: user._id,
         otp: otp,
-        expiresAt: new Date(Date.now() + 5 * 60 * 1000), // Valid for 5 minutes
+        expiresAt: new Date(Date.now() + 5 * 60 * 1000),
       });
       await newOtp.save();
 
-      // Send the OTP email
-      const emailResponse = await exports.sendMail(
+      await sendMail(
         user.email,
-        "\uD83D\uDCE2 Verification OTP Code",
+        "Verification OTP Code",
         `<p>Your verification OTP code is: <strong>${otp}</strong></p>
-        <p>\u231B This OTP is valid for <strong>5 minutes</strong>.</p>`
+        <p>This OTP is valid for <strong>5 minutes</strong>.</p>`
       );
 
-      if (!emailResponse.success) {
-        throw new Error(emailResponse.error);
-      }
-
-      return res.status(200).json({
+      res.status(200).json({
         success: true,
-        message: "\uD83D\uDCE9 OTP sent successfully!",
+        message: "OTP sent successfully",
       });
     } catch (error) {
       console.error("Resend OTP Error:", error);
-      return res.status(500).json({
+      res.status(500).json({
         success: false,
-        message: "\uD83D\uDEA8 Error sending new OTP. Please try again later.",
+        message: "Error sending new OTP",
       });
     }
   },
 ];
-
-// exports.resendOtp = [
-//   authLimiter,
-//   async (req, res) => {
-//     // console.log("user:", JSON.stringify(req.body, null, 2));
-//     try {
-//       const user = await User.findById(req.body?.user);
-
-//       if (!user) {
-//         return res.status(404).json({
-//           success: false,
-//           message: "User not found",
-//         });
-//       }
-
-//       await Otp.deleteMany({ user: user._id });
-
-//       const otp = generateOTP();
-//       const newOtp = new Otp({
-//         user: user._id,
-//         otp: otp,
-//         expiresAt: new Date(Date.now() + 5 * 60 * 1000),
-//       });
-//       await newOtp.save();
-
-//       await sendMail(
-//         user.email,
-//         "Verification OTP Code",
-//         `Your verification otp code is: ${otp}
-//         This otp valid for 5 minutes
-//         `
-//       );
-
-//       res.status(200).json({
-//         success: true,
-//         message: "OTP sent successfully",
-//       });
-//     } catch (error) {
-//       console.error("Resend OTP Error:", error);
-//       res.status(500).json({
-//         success: false,
-//         message: "Error sending new OTP",
-//       });
-//     }
-//   },
-// ];
 
 exports.forgotPassword = async (req, res) => {
   let newToken;
