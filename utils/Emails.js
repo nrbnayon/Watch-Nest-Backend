@@ -21,17 +21,17 @@ exports.sendMail = async (receiverEmail, subject, body) => {
 
     // Send the email using the transport object
     const info = await transporter.sendMail({
-      from: process.env.EMAIL,
+      from: "Watch Nest" || process.env.EMAIL,
       to: receiverEmail,
       subject: subject,
       html: body,
     });
 
-    console.log(`Email sent: ${info.messageId}`);
+    // console.log(`Email sent: ${info.messageId}`);
     return { success: true, message: `Email sent to ${receiverEmail}` };
   } catch (error) {
     // Log the error
-    console.error(`Error sending email: ${error.message}`);
+    // console.error(`Error sending email: ${error.message}`);
 
     // Return a failure message
     return { success: false, error: error.message };
