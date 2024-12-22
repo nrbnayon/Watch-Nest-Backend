@@ -24,8 +24,7 @@ exports.sendMail = async (receiverEmail, subject, body) => {
     }
 
     const info = await transporter.sendMail({
-      from: "\uD83D\uDC8C Watch Nest",
-      // from: "\uD83D\uDC8C Watch Nest" || process.env.EMAIL,
+      from: "\uD83D\uDC8C Watch Nest" || process.env.EMAIL,
       to: receiverEmail,
       subject: subject,
       html: body,
