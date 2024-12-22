@@ -1,9 +1,5 @@
 // Import necessary modules
 const nodemailer = require("nodemailer");
-const User = require("../models/User"); // Replace with actual path to User model
-const Otp = require("../models/Otp"); // Replace with actual path to Otp model
-const { generateOTP } = require("../utils/otpUtils"); // Replace with actual OTP generation utility
-const authLimiter = require("../middlewares/authLimiter"); // Replace with actual middleware path
 
 // Nodemailer transporter configuration
 const transporter = nodemailer.createTransport({
