@@ -50,19 +50,19 @@ exports.signup = async (req, res) => {
     const createdUser = await newUser.save();
 
     // Rest of your existing code for OTP generation and email sending
-    const otp = generateOTP();
-    const newOtp = new Otp({
-      user: createdUser._id,
-      otp: otp,
-      expiresAt: new Date(Date.now() + 15 * 60 * 1000),
-    });
-    await newOtp.save();
+    // const otp = generateOTP();
+    // const newOtp = new Otp({
+    //   user: createdUser._id,
+    //   otp: otp,
+    //   expiresAt: new Date(Date.now() + 15 * 60 * 1000),
+    // });
+    // await newOtp.save();
 
-    await sendMail(
-      createdUser.email,
-      "Account Verification",
-      `Your verification code is: ${otp}`
-    );
+    // await sendMail(
+    //   createdUser.email,
+    //   "Account Verification",
+    //   `Your verification code is: ${otp}`
+    // );
 
     const token = generateToken(sanitizeUser(createdUser));
 
@@ -197,14 +197,16 @@ exports.resendOtp = [
       const newOtp = new Otp({
         user: user._id,
         otp: otp,
-        expiresAt: new Date(Date.now() + 15 * 60 * 1000),
+        expiresAt: new Date(Date.now() + 5 * 60 * 1000),
       });
       await newOtp.save();
 
       await sendMail(
         user.email,
-        "New Verification Code",
-        `Your new verification code is: ${otp}`
+        "Verification OTP Code",
+        `Your verification otp code is: ${otp}
+        This otp valid for 5 minutes
+        `
       );
 
       res.status(200).json({
